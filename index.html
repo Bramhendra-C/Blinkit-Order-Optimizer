@@ -57,15 +57,15 @@
                 <!-- Store Location Input -->
                 <div class="mb-5">
                     <label class="block text-sm font-medium text-gray-700 mb-1">1. Store Location (Lat, Lon)</label>
-                    <input type="text" id="storeInput" placeholder="40.7128, -74.0060 (New York)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                    <input type="text" id="storeInput" placeholder="30.3054° N, 78.0015° E (Gurugram , Haryana, India)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150">
                 </div>
 
                 <!-- Customer Locations Input -->
                 <div class="mb-5">
                     <label class="block text-sm font-medium text-gray-700 mb-1">2. Customer Drop-offs (One per line: Lat, Lon)</label>
-                    <textarea id="customersInput" rows="6" placeholder="40.7580, -73.9855 (Times Square)
-40.7061, -74.0112 (Wall Street)
-40.7484, -73.9857 (Empire State)" 
+                    <textarea id="customersInput" rows="6" placeholder="17.4065° N, 78.4772° E (Hyderabad , Telangana)
+14.4673° N, 78.8242° E (Kadapa , Andhra pradesh)
+12.9629° N, 77.5775° E (Bengaluru)" 
                         class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150"></textarea>
                 </div>
                 
@@ -135,11 +135,10 @@
         const errorMessage = document.getElementById('errorMessage');
 
         // --- Demo Data ---
-        const DEMO_STORE = "40.7000, -74.0000"; // Center point
-        const DEMO_CUSTOMERS = `40.7010, -74.0050
-40.7050, -73.9950
-40.6980, -74.0100
-40.7030, -74.0080`;
+        const DEMO_STORE = "30.3054° N, 78.0015° E"; // Center point
+        const DEMO_CUSTOMERS = `17.4065° N, 78.4772° E 
+14.4673° N, 78.8242° E 
+12.9629° N, 77.5775° E `;
 
         // --- Helper Functions ---
 
@@ -368,5 +367,6 @@
     </script>
 </body>
 </html>
+
 
 
