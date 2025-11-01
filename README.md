@@ -7,7 +7,7 @@ Frontend UI Preview
 
 
 ### 📍 Optimized Route Results  
-![System UI](./Demo/Demo-1.jpg)
+![System UI](./Demo/Demo-2.jpg)
 ### 📊 Delivery Summary Card
 ![System UI](./Demo/Demo-1.jpg)
 ---
@@ -184,6 +184,7 @@ Bramhendra C
 Thanks for checking out this project! Feel free to ⭐ the repo and provide feedback or contributions.
 
 ---
+
 
 
 
