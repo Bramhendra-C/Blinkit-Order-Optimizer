@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blinkit Order Optimizer</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blinkit-green: #3B82F6; /* Using a vibrant blue for a modern tech feel */
+            --blinkit-dark: #1F2937;
+            --blinkit-light: #F9FAFB;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--blinkit-light);
+        }
+        .card {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .btn-primary {
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.4);
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-2">
+                <span class="text-blue-600">Route</span> Optimizer
+            </h1>
+            <p class="text-xl text-gray-600">Fastest Delivery Sequence Engine</p>
+        </header>
+
+        <!-- Main Grid Layout -->
+        <div class="grid md:grid-cols-2 gap-8">
+            
+            <!-- Input Panel -->
+            <div class="card bg-white p-6 rounded-xl">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.727A8 8 0 016.343 4.273A8 8 0 0117.657 16.727zm0 0l2.121 2.121a1 1 0 01-1.414 1.414l-2.121-2.121z"></path></svg>
+                    Input Locations
+                </h2>
+                <p class="text-sm text-gray-500 mb-4">
+                    The optimizer expects coordinates (lat, lon). We use mock data for demonstration.
+                    Click "Use Demo Data" to load sample coordinates.
+                </p>
+
+                <!-- Store Location Input -->
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">1. Store Location (Lat, Lon)</label>
+                    <input type="text" id="storeInput" placeholder="40.7128, -74.0060 (New York)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                </div>
+
+                <!-- Customer Locations Input -->
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">2. Customer Drop-offs (One per line: Lat, Lon)</label>
+                    <textarea id="customersInput" rows="6" placeholder="40.7580, -73.9855 (Times Square)
+40.7061, -74.0112 (Wall Street)
+40.7484, -73.9857 (Empire State)" 
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150"></textarea>
+                </div>
+                
+                <button id="demoBtn" class="w-full py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition duration-150 mb-3">
+                    Use Demo Data
+                </button>
+                
+                <button id="optimizeBtn" class="btn-primary w-full py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700">
+                    <span id="btnText">Calculate Fastest Route</span>
+                    <span id="loadingSpinner" class="hidden">
+                        <svg class="animate-spin h-5 w-5 text-white inline mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Optimizing...
+                    </span>
+                </button>
+            </div>
+
+            <!-- Output Panel -->
+            <div class="card bg-white p-6 rounded-xl">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v14c0 1.105-.895 2-2 2H9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m0-4h.01"></path></svg>
+                    Optimization Result
+                </h2>
+                
+                <div id="resultOutput">
+                    <p class="text-gray-500 text-center py-12">
+                        Enter your locations and click 'Calculate' to see the optimized route and ETA.
+                    </p>
+                </div>
+                
+                <!-- Summary Card (Hidden initially) -->
+                <div id="summaryCard" class="hidden mt-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-lg">
+                    <h3 class="text-lg font-bold text-blue-800">Delivery Summary</h3>
+                    <p class="text-blue-700 mt-1">Total Time: <span id="totalTime" class="font-extrabold text-xl">--</span></p>
+                    <p class="text-blue-700">Total Distance: <span id="totalDistance" class="font-extrabold text-xl">--</span></p>
+                </div>
+
+                <!-- Error Box (Hidden initially) -->
+                <div id="errorBox" class="hidden mt-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded-lg">
+                    <p class="font-semibold">Error:</p>
+                    <p id="errorMessage"></p>
+                    <p class="mt-2 text-sm">Please ensure the FastAPI backend (`optimizer_api.py`) is running on `http://127.0.0.1:8000`.</p>
+                </div>
+            </div>
+
+        </div>
+        
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:8000/optimize_route';
+
+        // --- DOM Elements ---
+        const storeInput = document.getElementById('storeInput');
+        const customersInput = document.getElementById('customersInput');
+        const optimizeBtn = document.getElementById('optimizeBtn');
+        const demoBtn = document.getElementById('demoBtn');
+        const btnText = document.getElementById('btnText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const resultOutput = document.getElementById('resultOutput');
+        const summaryCard = document.getElementById('summaryCard');
+        const totalTimeSpan = document.getElementById('totalTime');
+        const totalDistanceSpan = document.getElementById('totalDistance');
+        const errorBox = document.getElementById('errorBox');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // --- Demo Data ---
+        const DEMO_STORE = "40.7000, -74.0000"; // Center point
+        const DEMO_CUSTOMERS = `40.7010, -74.0050
+40.7050, -73.9950
+40.6980, -74.0100
+40.7030, -74.0080`;
+
+        // --- Helper Functions ---
+
+        /**
+         * @description Implements exponential backoff for network requests.
+         */
+        async function fetchWithRetry(url, options, maxRetries = 3, delay = 1000) {
+            let currentDelay = delay;
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    
+                    // Handle server errors (5xx) or rate limiting (429) by retrying
+                    if (response.status === 429 || response.status >= 500) {
+                        if (i < maxRetries - 1) {
+                            // Log the retry attempt but don't log it as an error
+                            await new Promise(resolve => setTimeout(resolve, currentDelay));
+                            currentDelay *= 2; // Exponential increase
+                            continue; // Retry the request
+                        }
+                        // If it's the last attempt, let it fall through to throw below
+                    }
+                    
+                    return response;
+                } catch (error) {
+                    if (i === maxRetries - 1) {
+                        throw new Error(`Network request failed after ${maxRetries} attempts: ${error.message}`);
+                    }
+                    // Log the retry attempt but don't log it as an error
+                    await new Promise(resolve => setTimeout(resolve, currentDelay));
+                    currentDelay *= 2; // Exponential increase
+                }
+            }
+            throw new Error("Failed to get a successful response from the server.");
+        }
+
+
+        /** Shows an error message in the dedicated box. */
+        const showError = (message) => {
+            errorBox.classList.remove('hidden');
+            errorMessage.textContent = message;
+            resultOutput.innerHTML = '';
+            summaryCard.classList.add('hidden');
+        };
+
+        /** Hides the error message. */
+        const hideError = () => {
+            errorBox.classList.add('hidden');
+        };
+
+        /** Parses the raw input strings into structured Location objects. */
+        const parseLocations = (storeRaw, customersRaw) => {
+            const locations = [];
+
+            // 1. Parse Store
+            const storeParts = storeRaw.split(',').map(p => p.trim());
+            if (storeParts.length !== 2 || isNaN(parseFloat(storeParts[0])) || isNaN(parseFloat(storeParts[1]))) {
+                throw new Error("Invalid store coordinates. Use format: lat, lon");
+            }
+            const store = {
+                id: 'Store',
+                lat: parseFloat(storeParts[0]),
+                lon: parseFloat(storeParts[1])
+            };
+            locations.push(store);
+
+            // 2. Parse Customers
+            const customerLines = customersRaw.split('\n').filter(line => line.trim() !== '');
+            const customers = customerLines.map((line, index) => {
+                const parts = line.split(',').map(p => p.trim());
+                if (parts.length !== 2 || isNaN(parseFloat(parts[0])) || isNaN(parseFloat(parts[1]))) {
+                    throw new Error(`Invalid coordinates for customer ${index + 1}. Use format: lat, lon`);
+                }
+                return {
+                    id: `Customer ${index + 1}`,
+                    lat: parseFloat(parts[0]),
+                    lon: parseFloat(parts[1])
+                };
+            });
+            
+            if (customers.length === 0) {
+                throw new Error("Please enter at least one customer drop-off location.");
+            }
+
+            return { store, customers };
+        };
+
+        /** Renders the optimized route segments into HTML. */
+        const renderRoute = (routeSegments, optimalSequence) => {
+            let html = `<ol class="relative border-l border-blue-200 ml-4">`;
+            
+            // Start at the Store
+            html += `
+                <li class="mb-8 ml-6">
+                    <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white text-blue-600 font-bold">
+                        S
+                    </span>
+                    <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900">
+                        Start: ${optimalSequence[0]}
+                    </h3>
+                    <p class="text-sm text-gray-500">Ready for dispatch.</p>
+                </li>
+            `;
+
+            // Route Segments
+            routeSegments.forEach((segment, index) => {
+                const step = index + 1;
+                const nextId = optimalSequence[step];
+
+                html += `
+                    <li class="mb-8 ml-6">
+                        <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-600 rounded-full -left-3 ring-8 ring-white text-white font-bold">
+                            ${step}
+                        </span>
+                        <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900">
+                            Deliver to: ${nextId}
+                        </h3>
+                        <div class="p-3 bg-gray-50 rounded-lg shadow-inner text-sm">
+                            <p class="font-medium text-gray-700">${segment.from_id} <span class="mx-1">→</span> ${nextId}</p>
+                            <p class="mt-1 text-gray-600">
+                                Time: <span class="font-bold">${segment.time_minutes.toFixed(1)} mins</span>
+                                <span class="mx-2 text-gray-300">|</span>
+                                Dist: <span class="font-bold">${segment.distance_km.toFixed(2)} km</span>
+                            </p>
+                        </div>
+                    </li>
+                `;
+            });
+            
+            // Final Stop
+            html += `
+                <li class="mb-0 ml-6">
+                    <span class="absolute flex items-center justify-center w-6 h-6 bg-green-500 rounded-full -left-3 ring-8 ring-white text-white font-bold">
+                        E
+                    </span>
+                    <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900">
+                        Route Complete
+                    </h3>
+                    <p class="text-sm text-gray-500">All orders successfully delivered!</p>
+                </li>
+            `;
+
+            html += `</ol>`;
+            resultOutput.innerHTML = html;
+        };
+
+        // --- Event Handlers ---
+
+        /** Handles the button click to fetch the optimized route from the API. */
+        const handleOptimization = async () => {
+            hideError();
+            loadingSpinner.classList.remove('hidden');
+            btnText.classList.add('hidden');
+            optimizeBtn.disabled = true;
+
+            const storeRaw = storeInput.value.trim();
+            const customersRaw = customersInput.value.trim();
+
+            try {
+                const { store, customers } = parseLocations(storeRaw, customersRaw);
+                
+                const requestPayload = {
+                    store_location: store,
+                    customer_locations: customers
+                };
+
+                // Use the resilient fetch function
+                const response = await fetchWithRetry(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestPayload)
+                });
+
+                if (!response.ok) {
+                    // Check if it's a JSON error response before throwing a generic error
+                    const contentType = response.headers.get("content-type");
+                    let errorDetail = 'Failed to calculate route.';
+                    if (contentType && contentType.indexOf("application/json") !== -1) {
+                        const errorJson = await response.json();
+                        errorDetail = errorJson.detail || errorDetail;
+                    }
+                    throw new Error(`API Error (${response.status}): ${errorDetail}`);
+                }
+
+                const data = await response.json();
+
+                // Update Summary Card
+                totalTimeSpan.textContent = `${data.total_time_minutes.toFixed(1)} mins`;
+                totalDistanceSpan.textContent = `${data.total_distance_km.toFixed(2)} km`;
+                summaryCard.classList.remove('hidden');
+
+                // Render Route Steps
+                renderRoute(data.optimized_route, data.optimal_sequence);
+
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                loadingSpinner.classList.add('hidden');
+                btnText.classList.remove('hidden');
+                optimizeBtn.disabled = false;
+            }
+        };
+
+        /** Loads the demo data into the input fields. */
+        const loadDemoData = () => {
+            storeInput.value = DEMO_STORE;
+            customersInput.value = DEMO_CUSTOMERS;
+            resultOutput.innerHTML = `
+                <p class="text-gray-500 text-center py-12">
+                    Demo data loaded. Click 'Calculate Fastest Route' to see the result!
+                </p>
+            `;
+            summaryCard.classList.add('hidden');
+            hideError();
+        };
+
+        // --- Initialization ---
+        optimizeBtn.addEventListener('click', handleOptimization);
+        demoBtn.addEventListener('click', loadDemoData);
+        
+        // Load demo data on startup for immediate testing
+        window.onload = loadDemoData; 
+
+    </script>
+</body>
+</html>
